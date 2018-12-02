@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use itertools::Itertools;
 
 const INPUT: &'static str = include_str!("../../day2_input.txt");
 
@@ -8,12 +9,10 @@ fn main() {
 }
 
 pub fn checksum() {
-    let mut cache = Vec::<char>::new();
-
     let result =
         INPUT
             .lines()
-            .fold((0, 0), |mut counts, line| {
+            .fold((0, 0), |counts, line| {
                 let mut frequencies  = HashMap::<char, u32>::new();
 
                 line.chars().for_each(|c| {
@@ -28,30 +27,26 @@ pub fn checksum() {
 }
 
 pub fn find_similar() {
-    let r: Option<String>=
-        INPUT
-            .lines()
-            .enumerate()
-            .filter_map(|(i, id1)| {
-                INPUT
-                    .lines()
-                    .skip(i+1)
-                    .map(|id2| {
-                        (id1.chars().zip(id2.chars()).fold(0, |d, (c1, c2)| {
-                            d + (c1 != c2) as u32
-                        }), id1, id2)
-                    })
-                    .filter(|(d, _, _)| *d == 1)
-                    .map(|(_, id1, id2)| {
-                        id1
-                            .chars()
-                            .zip(id2.chars())
-                            .filter(|(a,b)| { a==b })
-                            .map(|(a,_)| a)
-                            .collect()
-                    })
-                    .nth(0) })
-            .nth(0);
+
+    let r: Option<String> = INPUT
+        .lines()
+        .cartesian_product(INPUT.lines())
+        .map(|(id1, id2): (&str, &str)| {
+			(id1.chars().zip(id2.chars()).fold(0, |d, (c1, c2)| {
+				d + (c1 != c2) as u32
+			}), id1, id2)
+        })
+        .filter(|(d, _, _)| *d == 1)
+        .map(|(_, id1, id2)| {
+            id1
+                .chars()
+                .zip(id2.chars())
+                .filter(|(a,b)| { a==b })
+                .map(|(a,_)| a)
+                .collect()
+        })
+        .nth(0);
+
 
     println!("{:?}", r);
 }
