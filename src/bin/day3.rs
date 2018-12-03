@@ -1,13 +1,13 @@
 #[macro_use]
 extern crate lazy_static;
 
+use gif::Encoder;
 use itertools::*;
+use rand::Rng;
 use regex::Regex;
+use std::borrow::Cow;
 use std::collections::HashSet;
 use std::fs::File;
-use gif::Encoder;
-use std::borrow::Cow;
-use rand::Rng;
 
 const INPUT: &'static str = include_str!("../../day3_input.txt");
 
@@ -26,7 +26,6 @@ enum Tile {
 }
 
 fn main() {
-
     let input = INPUT
         .lines()
         .map(|line| {
@@ -43,11 +42,11 @@ fn main() {
 
     let mut image = File::create("day3_timelapse.gif").unwrap();
 
-    let mut pallete = vec![0; 256*3];
+    let mut pallete = vec![0; 256 * 3];
 
     let mut rng = rand::thread_rng();
 
-	//rng.fill(&mut pallete);
+    //rng.fill(&mut pallete);
     rng.fill(&mut pallete[..]);
 
     pallete[0] = 0xFF;
@@ -61,9 +60,7 @@ fn main() {
     let mut encoder = Encoder::new(&mut image, 1001, 1001, &pallete).unwrap();
 
     let mut tiles = vec![Tile::Empty; SIZE * SIZE];
-    let mut pixels = vec![0u8; SIZE*SIZE];
-
-
+    let mut pixels = vec![0u8; SIZE * SIZE];
 
     let mut overlap = 0;
     let mut no_overlap = HashSet::new();
@@ -74,19 +71,19 @@ fn main() {
         let color_id = (id % 254 + 2) as u8;
 
         for (i, j) in iproduct!((l.0..r.0), (l.1..r.1)) {
-            let tile= &mut tiles[i*SIZE+j];
-            let pixel= &mut pixels[i*SIZE+j];
+            let tile = &mut tiles[i * SIZE + j];
+            let pixel = &mut pixels[i * SIZE + j];
 
             match *tile {
                 Tile::Empty => {
                     *tile = Tile::Filled(id);
                     *pixel = color_id;
-                },
+                }
                 Tile::Filled(last_claim) => {
                     *tile = Tile::Intersected;
 
                     no_overlap.remove(&id);
-					no_overlap.remove(&last_claim);
+                    no_overlap.remove(&last_claim);
 
                     overlap += 1;
                     *pixel = 1;
@@ -95,7 +92,6 @@ fn main() {
                     no_overlap.remove(&id);
                 }
             }
-
         }
 
         let mut frame = gif::Frame::default();
@@ -105,8 +101,6 @@ fn main() {
 
         encoder.write_frame(&frame).unwrap();
     }
-
-
 
     println!("Overlap of {} tiles", overlap);
     println!("No Overlap: {:?}", no_overlap);
