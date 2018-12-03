@@ -31,14 +31,14 @@ fn main() {
             let pos: (usize, usize) = (caps[2].parse().unwrap(), caps[3].parse().unwrap());
             let dim: (usize, usize) = (caps[4].parse().unwrap(), caps[5].parse().unwrap());
 
-            (id, pos, dim)
+            (id, pos, (pos.0 + dim.0, pos.1 + dim.1))
         })
         .collect::<Vec<_>>();
 
     let mut overlap = 0;
 
-    for (_, p, d) in input.iter() {
-        for (i, j) in iproduct!((p.0..p.0 + d.0), (p.1..p.1 + d.1)) {
+    for (_, l, r) in input.iter() {
+        for (i, j) in iproduct!((l.0..r.0), (l.1..r.1)) {
             let tile = &mut tiles[i + j * 1001];
 
             match *tile {
@@ -54,8 +54,8 @@ fn main() {
 
     println!("Overlap of {} tiles", overlap);
 
-    'main: for (id, p, d) in input.iter() {
-        for (i, j) in iproduct!((p.0..p.0 + d.0), (p.1..p.1 + d.1)) {
+    'main: for (id, l, r) in input.iter() {
+        for (i, j) in iproduct!((l.0..r.0), (l.1..r.1)) {
             let tile = tiles[i + j * 1001];
 
             match tile {
