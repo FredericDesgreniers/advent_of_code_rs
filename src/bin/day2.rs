@@ -33,7 +33,8 @@ pub fn find_similar() {
             (
                 id1.chars()
                     .zip(id2.chars())
-                    .fold(0, |d, (c1, c2)| d + (c1 != c2) as u32),
+                    .map(|(c1, c2)| (c1 != c2) as u32)
+                    .sum::<u32>(),
                 id1,
                 id2,
             )
