@@ -39,7 +39,7 @@ fn main() {
 
     for (_, l, r) in input.iter() {
         for (i, j) in iproduct!((l.0..r.0), (l.1..r.1)) {
-            let tile = &mut tiles[i + j * 1001];
+            let tile = &mut tiles[i*1001 + j];
 
             match *tile {
                 Tile::Empty => *tile = Tile::Filled,
@@ -56,7 +56,7 @@ fn main() {
 
     'main: for (id, l, r) in input.iter() {
         for (i, j) in iproduct!((l.0..r.0), (l.1..r.1)) {
-            let tile = tiles[i + j * 1001];
+            let tile = tiles[i*1001 + j];
 
             match tile {
                 Tile::Intersected => {
