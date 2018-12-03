@@ -1,4 +1,5 @@
 #[macro_use]
 extern crate itertools;
 
-pub use itertools as it;
+#[macro_use]
+extern crate lazy_static;
