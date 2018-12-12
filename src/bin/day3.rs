@@ -50,7 +50,6 @@ fn main() {
 
     let mut rng = rand::thread_rng();
 
-    //rng.fill(&mut pallete);
     rng.fill(&mut pallete[..]);
 
     pallete[0] = 0xFF;
@@ -69,12 +68,18 @@ fn main() {
     pallete[10] = 0x33;
     pallete[11] = 0;
 
-    let mut visualizer = Visualizer::new(image, SIZE as u16, SIZE as u16, &pallete, Default::default()).unwrap();
+    let mut visualizer = Visualizer::new(
+        image,
+        SIZE as u16,
+        SIZE as u16,
+        &pallete,
+        Default::default(),
+    ).unwrap();
 
     let mut tiles = vec![Tile::Empty; SIZE as usize * SIZE as usize];
 
     let mut overlap = 0;
-	let mut total_claimed = 0;
+    let mut total_claimed = 0;
 
     let mut no_overlap = HashSet::new();
 
@@ -82,7 +87,10 @@ fn main() {
 
     let overlap_pos = visualizer.text(10, (progress_pos.1).1 + 100, "overlap", 0, 32.0);
 
-    let info_text_width = cmp::max((progress_pos.0).0 + (progress_pos.1).0, (overlap_pos.0).1 + (overlap_pos.1).0);
+    let info_text_width = cmp::max(
+        (progress_pos.0).0 + (progress_pos.1).0,
+        (overlap_pos.0).1 + (overlap_pos.1).0,
+    );
 
     let claim_num = input.len();
 
@@ -112,7 +120,6 @@ fn main() {
 
                     overlap += 1;
                     *pixel = 1;
-
                 }
                 _ => {
                     no_overlap.remove(&id);
@@ -131,17 +138,28 @@ fn main() {
 
             let middle_width = (width as f32 * progress_percent) as u16;
 
-            visualizer.clear_rect(
-                ((start_x, start_y), ((middle_width) as u16, (height))),
-                2
-            );
+            visualizer.clear_rect(((start_x, start_y), ((middle_width) as u16, (height))), 2);
 
             visualizer.clear_rect(
-                ((start_x+middle_width, start_y), ((width - middle_width) as u16, (height))),
-                3
+                (
+                    (start_x + middle_width, start_y),
+                    ((width - middle_width) as u16, (height)),
+                ),
+                3,
             );
 
-            visualizer.text(start_x + 100, 50, &format!("{} / {} - {}%", id, claim_num, (100.0 * progress_percent) as u32), 0, 32.0);
+            visualizer.text(
+                start_x + 100,
+                50,
+                &format!(
+                    "{} / {} - {}%",
+                    id,
+                    claim_num,
+                    (100.0 * progress_percent) as u32
+                ),
+                0,
+                32.0,
+            );
         }
 
         {
@@ -155,23 +173,33 @@ fn main() {
 
             let middle_width = (width as f32 * overlap_percent) as u16;
 
-            visualizer.clear_rect(
-                ((start_x, start_y), ((middle_width) as u16, (height))),
-                2
-            );
+            visualizer.clear_rect(((start_x, start_y), ((middle_width) as u16, (height))), 2);
 
             visualizer.clear_rect(
-                ((start_x+middle_width, start_y), ((width - middle_width) as u16, (height))),
-                3
+                (
+                    (start_x + middle_width, start_y),
+                    ((width - middle_width) as u16, (height)),
+                ),
+                3,
             );
 
-            visualizer.text(start_x+100, (progress_pos.1).1+100, &format!("{} / {} - {}%", overlap, total_claimed, (100.0 * overlap_percent) as u32), 0, 32.0);
+            visualizer.text(
+                start_x + 100,
+                (progress_pos.1).1 + 100,
+                &format!(
+                    "{} / {} - {}%",
+                    overlap,
+                    total_claimed,
+                    (100.0 * overlap_percent) as u32
+                ),
+                0,
+                32.0,
+            );
         }
 
         visualizer.end_frame();
 
         println!("frame {} done", id);
-
     }
 
     println!("Overlap of {} tiles", overlap);
